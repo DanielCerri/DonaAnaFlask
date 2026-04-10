@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonaAna | Painel de Gestão</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Deixe a regra CSS assim: */
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            padding: 0.8rem;
+            border: 1px solid #D5D8DC;
+            border-radius: 6px;
+            outline: none;
+            background-color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical; /* Permite que o gestor aumente a caixa só para baixo */
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+        }
+        :root {
+            --primary-color: #D35400; 
+            --primary-hover: #B04600;
+            --bg-color: #F4F6F7; 
+            --sidebar-bg: #2C3E50;
+            --card-bg: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --text-light: #ECF0F1;
+            --status-open: #27AE60;
+            --status-closed: #E74C3C;
+            --danger-color: #E74C3C;
+            --danger-hover: #C0392B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- MENU LATERAL (Sidebar) --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 0;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .nav-link {
+            padding: 1rem 2rem;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            border-left: 4px solid var(--status-closed);
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 2rem;
+        }
+
+        .admin-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #F2F4F4;
+            padding-bottom: 0.5rem;
+        }
+
+        /* --- CONTROLE DE STATUS --- */
+        .status-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-status {
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.3s;
+        }
+
+        .btn-status:hover { opacity: 0.8; }
+        .btn-abrir { background-color: var(--status-open); }
+        .btn-fechar { background-color: var(--status-closed); }
+
+        /* --- FORMULÁRIO DE CARDÁPIO --- */
+        .menu-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid #D5D8DC;
+            border-radius: 6px;
+            outline: none;
+            background-color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+            background: #F8F9F9;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* --- TABELA DE PRODUTOS CADASTRADOS --- */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .product-table th, 
+        .product-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #EAECEE;
+        }
+
+        .product-table th {
+            background-color: #F8F9F9;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .product-table td {
+            vertical-align: middle;
+        }
+
+        .img-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #EAECEE;
+        }
+
+        .categoria-badge {
+            background-color: #EBF5FB;
+            color: #2980B9;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .btn-excluir {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-excluir:hover {
+            background-color: var(--danger-hover);
+        }
+
+        /* --- GRID DE MESAS ABERTAS --- */
+        .mesas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .mesa-card {
+            border: 1px solid #EAECEE;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            background: #FDFBF7;
+            transition: transform 0.2s;
+        }
+
+        .mesa-card:hover { transform: translateY(-5px); }
+
+        .mesa-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mesa-nome {
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-ver-mesa {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--text-main);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Gestão DonaAna</h2>
+        </div>
+        <a href="#status" class="nav-link active">⚙️ Visão Geral</a>
+        <a href="#cardapio" class="nav-link">🍔 Novo Produto</a>
+        <a href="#lista-produtos" class="nav-link">📋 Cardápio Atual</a>
+        <a href="#mesas" class="nav-link">👥 Mesas Abertas</a>
+        <a href="/logout" class="nav-link logout-btn">🚪 Sair do Sistema</a>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="page-header">
+            <h1>Painel de Controle</h1>
+            <p>Bem-vindo, <strong>{{ session['username']}}</strong></p>
+        </div>
+
+        <div class="admin-card" id="status">
+            <h3>Status do Restaurante</h3>
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                Atual: <strong>Aberto</strong>
+            </p>
+            
+            <form action="/alterar_status" method="POST" class="status-control">
+                <button type="submit" name="status" value="abrir" class="btn-status btn-abrir">🟢 Abrir Restaurante</button>
+                <button type="submit" name="status" value="fechar" class="btn-status btn-fechar">🔴 Fechar Restaurante</button>
+            </form>
+        </div>
+
+        <div class="admin-card" id="cardapio">
+            <h3>Cadastrar Novo Produto</h3>
+            
+<form action="/cadastrar_produto" method="POST" enctype="multipart/form-data" class="menu-form">
+                
+                <div class="form-group">
+                    <label for="nome_produto">Nome do Produto</label>
+                    <input type="text" id="nome_produto" name="nome_produto" placeholder="Ex: Hambúrguer Clássico" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoria_produto">Categoria</label>
+                    <select id="categoria_produto" name="categoria_produto" required>
+                        <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="lanches">Lanches</option>
+                        <option value="porcoes">Porções</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="sobremesas">Sobremesas</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="descricao_produto">Descrição do Produto</label>
+                    <textarea id="descricao_produto" name="descricao_produto" rows="3" placeholder="Ex: Pão brioche, blend de carne 200g, queijo prato e maionese da casa." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="preco_produto">Preço (R$)</label>
+                    <input type="number" id="preco_produto" name="preco_produto" step="0.01" placeholder="Ex: 25.90" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagem_produto">Imagem do Produto</label>
+                    <input type="file" id="imagem_produto" name="imagem_produto" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn-submit full-width">Salvar Produto no Cardápio</button>
+            </form>
+        </div>
+
+        <div class="admin-card" id="lista-produtos">
+            <h3>Cardápio Atual</h3>
+            
+            {% for prod in cardapio %}
+            <div class="table-responsive">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Descricao</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><img src="https://placehold.co/100x100/EAECEE/7F8C8D?text=Foto" class="img-thumbnail" alt="Foto"></td>
+                            <td><strong>{{ prod['produto'] }}</strong></td>
+                            <td>{{ prod['descricao'] }}</td>
+                            <td><span class="categoria-badge">{{ prod['categoria'] }}</span></td>
+                            <td>{{ prod['preco'] }}</td>
+                            <td>
+                                <form action="/excluir_produto/1" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                                    <button type="submit" class="btn-excluir">🗑️ Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {%  endfor %}
+
+        </div>
+
+        <div class="admin-card" id="mesas">
+            <h3>Mesas em Atendimento</h3>
+            
+            <div class="mesas-grid">
+                <div class="mesa-card">
+                    <div class="mesa-icon">🍽️</div>
+                    <div class="mesa-nome">João Silva</div>
+                    <p style="font-size: 0.8rem; color: #7F8C8D;">Mesa #01</p>
+                    <a href="{{ url_for('pedidos') }}" class="btn-ver-mesa">Ver Pedidos</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

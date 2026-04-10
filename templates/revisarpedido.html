@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonaAna | Revisar Pedido</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #D35400; 
+            --primary-hover: #B04600;
+            --bg-color: #FDFBF7; 
+            --card-bg: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --border-color: #EAECEE;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 2rem; }
+
+        .top-bar {
+            background-color: var(--card-bg);
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+        }
+
+        .btn-voltar {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .page-title { font-size: 1.2rem; font-weight: 700; }
+
+        main { max-width: 800px; margin: 2rem auto; padding: 0 5%; }
+
+        .review-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .review-card h3 { margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .item-info h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+        .item-info p { font-size: 0.85rem; color: var(--text-muted); }
+        .item-total { font-weight: 700; }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Botão Final que manda para o backend definitivo */
+        .btn-enviar-cozinha {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: background 0.3s;
+        }
+
+        .btn-enviar-cozinha:hover { background: var(--primary-hover); }
+
+        .observacao-box {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="/cardapio" class="btn-voltar">←</a>
+        <span class="page-title">Revisar Pedido</span>
+    </div>
+
+    <main>
+        <div class="review-card">
+            <h3>Itens Selecionados</h3>
+
+            <form action="/enviar_pedido_definitivo" method="POST">
+                
+                <div class="item-row">
+                    <div class="item-info">
+                        <h4>2x X-Bacon Duplo</h4>
+                        <p>R$ 32,90 cada</p>
+                    </div>
+                    <div class="item-total">R$ 65,80</div>
+                </div>
+
+                <div class="item-row">
+                    <div class="item-info">
+                        <h4>1x Coca-Cola Lata</h4>
+                        <p>R$ 6,50 cada</p>
+                    </div>
+                    <div class="item-total">R$ 6,50</div>
+                </div>
+
+                <textarea name="observacoes" class="observacao-box" rows="2" placeholder="Alguma observação? Ex: Tirar a cebola, maionese à parte..."></textarea>
+
+                <div class="total-row">
+                    <span>Total do Pedido:</span>
+                    <span>R$ 72,30</span>
+                </div>
+
+                <button type="submit" class="btn-enviar-cozinha">Confirmar e Enviar para Cozinha 👩‍🍳</button>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonaAna | Bem-vindo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variáveis de Cor (Fácil personalização) */
+        :root {
+            --primary-color: #D35400; /* Laranja quente, remete a comida/restaurante */
+            --primary-hover: #B04600;
+            --bg-color: #FDFBF7; /* Fundo levemente creme */
+            --card-bg: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --status-open: #27AE60;
+            --status-closed: #E74C3C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- CABEÇALHO (Header) --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background-color: transparent;
+        }
+
+        /* Status do Restaurante */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Classes para Jinja2 alternar: 'open' ou 'closed' */
+        .status-dot.open { background-color: var(--status-open); box-shadow: 0 0 8px var(--status-open); }
+        .status-dot.closed { background-color: var(--status-closed); box-shadow: 0 0 8px var(--status-closed); }
+
+        /* Botão Gestor (Canto Superior Direito) */
+        .btn-gestor {
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--card-bg);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #EAECEE;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-gestor:hover {
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+
+        /* --- CONTEÚDO PRINCIPAL (Main) --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 5%;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            width: 180px;
+            height: auto;
+            border-radius: 50%; /* Se a logo for redonda, senão remova */
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            /* Object fit garante que a imagem não distorça */
+            object-fit: cover; 
+        }
+
+        /* Cartão de Ação Central */
+        .action-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .action-card h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .action-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Formulário */
+        .user-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #D5D8DC;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Responsividade para celulares */
+        @media (max-width: 480px) {
+            header { padding: 1rem; }
+            .action-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="status-badge">
+            <span class="status-dot open"></span>
+            <span>Aberto Agora</span>
+        </div>
+
+        <a href="/gestor" class="btn-gestor">
+            Gestor ⚙️
+        </a>
+    </header>
+
+    <main>
+        <div class="logo-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPMwvn1r4tLwRoQOglqSo4TwkQ9T_I78vacQ&s" alt="Logotipo Restaurante DonaAna" class="logo"> 
+        </div>
+
+        <div class="action-card">
+            <h1>Bem-vindo ao DonaAna</h1>
+            <p>Informe seu nome para iniciar sua mesa e realizar seus pedidos.</p>
+            
+            <form action="/criar_mesa" method="get" class="user-form">
+                <div class="input-group">
+                    <input type="text" name="nome_cliente" id="nome_cliente" placeholder="Digite seu nome completo" required autocomplete="name">
+                </div>
+                <button type="submit" class="btn-primary">Criar Mesa / Conta</button>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>
