@@ -141,12 +141,14 @@
 <main>
         <div class="review-card">
             <h3>Itens Selecionados</h3>
-
+            {% if dadospedidos %}
+            {% set valortotal=namespace(total=0) %}
             {% for dados in dadospedidos %}
             <div class="item-row">
                 <div class="item-info">
                     <h4>{{ dados['produto'] }}</h4>
                     <p>R$ {{ dados['preco'] }}</p> 
+                    {% set valortotal.total = valortotal.total + dados['preco'] %}
                 </div>
                 
                 <div class="item-actions">
@@ -156,14 +158,18 @@
                 </div>
             </div>
             {% endfor %}
-
-            <form action="/enviar_pedido_definitivo" method="POST">
+            {% endif %}
+            <form action="/enviarpedido" >
                 
                 <textarea name="observacoes" class="observacao-box" rows="2" placeholder="Alguma observação? Ex: Tirar a cebola, maionese à parte..."></textarea>
 
                 <div class="total-row">
                     <span>Total do Pedido:</span>
-                    <span>R$ 00,00</span>
+                    <span>
+                        {% if valortotal %}
+                        R$ {{ valortotal.total }} 
+                    </span>
+                        {% endif %}
                 </div>
 
                 <button type="submit" class="btn-enviar-cozinha">Confirmar e Enviar para Cozinha 👩‍🍳</button>

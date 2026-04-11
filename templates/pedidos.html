@@ -196,7 +196,12 @@
     <div class="mesa-header-card">
         <div class="mesa-info">
             <h1>Mesa #01</h1>
-            <p>Cliente: <strong>João Silva</strong></p>
+            <p>Cliente: <strong>
+                {% if mesas %}
+                {{ mesas[0]['comanda'] }}
+                {% endif %}
+                
+            </strong></p>
         </div>
         <div class="status-badge">🟢 Em Atendimento</div>
     </div>
@@ -212,17 +217,22 @@
                         <tr>
                             <th>Produto</th>
                             <th>Valor Unit.</th>
-                            <th>Subtotal</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% set valortotal=namespace(total=0) %}
+                        {% if mesas %}
+                        
+                        {% for m in mesas %}
                         <tr>
-                            <td><strong>X-Bacon Duplo</strong></td>
-                            <td>R$ 32,90</td>
-                            <td>R$ 65,80</td>
+                            <td><strong> {{ m['produto'] }}</strong></td>
+                            <td>{{ m['preco'] }}</td>
                             <td><button class="btn-remover">Remover</button></td>
+                            {% set valortotal.total = valortotal.total + m['preco'] %}
                         </tr>
+                        {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -234,16 +244,16 @@
             <div class="resumo-box">
                 <div class="resumo-linha">
                     <span>Subtotal dos itens:</span>
-                    <span>R$ 100,80</span>
+                    <span>R$ {{ valortotal.total }}</span>
                 </div>
                 <div class="resumo-linha">
                     <span>Taxa de serviço (10%):</span>
-                    <span>R$ 10,08</span>
+                    <span>R$ {{ valortotal.total*1.10 }}</span>
                 </div>
                 
                 <div class="resumo-total">
                     <span>Total a Pagar:</span>
-                    <span style="color: var(--primary-color);">R$ 110,88</span>
+                    <span style="color: var(--primary-color);">R$ {{ valortotal.total + (valortotal.total*1.10) }}</span>
                 </div>
             </div>
 

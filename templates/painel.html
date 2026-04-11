@@ -430,7 +430,7 @@
                     <div class="mesa-icon">🍽️</div>
                     <div class="mesa-nome">{{ mesa['comanda']}}</div>
                     <p style="font-size: 0.8rem; color: #7F8C8D;">Mesa {{ mesa['id'] }}</p>
-                    <a href="{{ url_for('pedidos') }}" class="btn-ver-mesa">Ver Pedidos</a>
+                    <a href="{{ url_for('pedidos',idmesa=mesa['id']) }}" class="btn-ver-mesa">Ver Pedidos</a>
                 </div>
                 {% endfor %}
                 

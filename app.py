@@ -72,8 +72,6 @@ def tables():
 
 
 
-
-
 @app.route("/")
 def index():
     tables()
@@ -140,9 +138,16 @@ def painel():
 
 
 
-@app.route("/pedidos")
-def pedidos ():
-    return render_template('pedidos.html')
+@app.route("/pedidos/<int:idmesa>")
+def pedidos(idmesa):
+    
+    dados = banco.execute_query(r"""
+    SELECT * FROM ITEM_MESA IM  
+    INNER JOIN CARDAPIO C ON C.id=IM.id_item 
+    INNER JOIN MESA M ON M.ID=IM.ID_MESA
+    WHERE im.id_mesa=? ;""",idmesa)
+    
+    return render_template('pedidos.html',mesas=dados)
 
 
 @app.route("/criar_mesa")
@@ -168,17 +173,30 @@ def fazerpedidos():
 def revisarpedido():
 
     pedido = banco.execute_query(r"""
-    SELECT * FROM ITEM_MESA im  INNER JOIN CARDAPIO c ON c.id=im.id_item WHERE im.id_mesa=?
-     """,session.get('idcomanda'))
+    SELECT * FROM ITEM_MESA im  INNER JOIN CARDAPIO c ON c.id=im.id_item WHERE im.id_mesa=? and status="carrinho";
+    """,session.get('idcomanda'))
     
     return render_template('revisarpedido.html',dadospedidos=pedido)
+
+
+@app.route("/enviarpedido")
+def enviarpedido():
+    banco.execute_non_query(r""" 
+    UPDATE ITEM_MESA SET STATUS='COZINHA' WHERE ID_MESA= ?
+    """,session.get('idcomanda'))
+    
+    flash("pedido enviado para cozinha!")
+    return redirect(url_for('fazerpedidos'))
+
+
+
 
 @app.route("/adicionarpedido/<int:idproduto>")
 def adicionarpedido(idproduto):
     
     banco.execute_non_query(r"""
     INSERT INTO ITEM_MESA (ID_MESA,ID_ITEM,STATUS) VALUES (?,?,?)
-    """,session.get('idcomanda'),idproduto,'cozinha')
+    """,session.get('idcomanda'),idproduto,'carrinho')
 
     flash("PRODUTO ADICIONADO AO PEDIDO!")
     return redirect(url_for('fazerpedidos'))
