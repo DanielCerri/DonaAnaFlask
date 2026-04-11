@@ -130,7 +130,10 @@ def painel():
         cardapio=banco.execute_query(r"""
         SELECT * FROM CARDAPIO;""")
     
-        return render_template('painel.html',cardapio = cardapio)
+        mesas = banco.execute_query(r""" 
+        SELECT * FROM MESA;
+    """)
+        return render_template('painel.html',cardapio = cardapio,mesas=mesas)
     else:
         flash("Voce precisa realizar o login !")
         return redirect(url_for('gestor'))
@@ -144,10 +147,44 @@ def pedidos ():
 
 @app.route("/criar_mesa")
 def criar_mesa():
-    return render_template('fazerpedido.html')
+    comanda = request.args.get("mesa")
+
+    banco.execute_non_query(r"""
+    INSERT INTO MESA (COMANDA) VALUES (?) """,comanda)
+
+    idcomando = banco.execute_query('SELECT MAX(id) AS ultimo FROM MESA')[0]['ultimo']
+    session['comanda']=comanda
+    session['idcomanda']=idcomando
+
+    return redirect(url_for('fazerpedidos')) 
+
+@app.route("/fazerpedidos")
+def fazerpedidos():
+    cardapio = banco.execute_query('select * from cardapio')
+    return render_template('fazerpedido.html',dados=cardapio)
 
 
-app.route("mesa")
+@app.route("/revisarpedido")
+def revisarpedido():
+
+    pedido = banco.execute_query(r"""
+    SELECT * FROM ITEM_MESA im  INNER JOIN CARDAPIO c ON c.id=im.id_item WHERE im.id_mesa=?
+     """,session.get('idcomanda'))
+    
+    return render_template('revisarpedido.html',dadospedidos=pedido)
+
+@app.route("/adicionarpedido/<int:idproduto>")
+def adicionarpedido(idproduto):
+    
+    banco.execute_non_query(r"""
+    INSERT INTO ITEM_MESA (ID_MESA,ID_ITEM,STATUS) VALUES (?,?,?)
+    """,session.get('idcomanda'),idproduto,'cozinha')
+
+    flash("PRODUTO ADICIONADO AO PEDIDO!")
+    return redirect(url_for('fazerpedidos'))
+
+
+@app.route("/mesa")
 def mesa():
     return ""
 

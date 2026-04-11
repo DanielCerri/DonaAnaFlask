@@ -420,16 +420,20 @@
 
         </div>
 
-        <div class="admin-card" id="mesas">
+    <div class="admin-card" id="mesas">
             <h3>Mesas em Atendimento</h3>
-            
+
             <div class="mesas-grid">
+                
+                {% for mesa in mesas %}
                 <div class="mesa-card">
                     <div class="mesa-icon">🍽️</div>
-                    <div class="mesa-nome">João Silva</div>
-                    <p style="font-size: 0.8rem; color: #7F8C8D;">Mesa #01</p>
+                    <div class="mesa-nome">{{ mesa['comanda']}}</div>
+                    <p style="font-size: 0.8rem; color: #7F8C8D;">Mesa {{ mesa['id'] }}</p>
                     <a href="{{ url_for('pedidos') }}" class="btn-ver-mesa">Ver Pedidos</a>
                 </div>
+                {% endfor %}
+                
             </div>
         </div>
 

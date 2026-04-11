@@ -15,6 +15,7 @@
             --text-main: #2C3E50;
             --text-muted: #7F8C8D;
             --border-color: #EAECEE;
+            --danger-color: #E74C3C;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -29,6 +30,32 @@
             gap: 1rem;
             position: sticky;
             top: 0;
+        }
+
+        .btn-remover {
+            background-color: #FDEDED;
+            color: var(--danger-color);
+            border: 1px solid #FADBD8;
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-remover:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .btn-voltar {
@@ -107,41 +134,41 @@
 <body>
 
     <div class="top-bar">
-        <a href="/cardapio" class="btn-voltar">←</a>
+        <a href="/fazerpedidos" class="btn-voltar">←</a>
         <span class="page-title">Revisar Pedido</span>
     </div>
 
-    <main>
+<main>
         <div class="review-card">
             <h3>Itens Selecionados</h3>
 
+            {% for dados in dadospedidos %}
+            <div class="item-row">
+                <div class="item-info">
+                    <h4>{{ dados['produto'] }}</h4>
+                    <p>R$ {{ dados['preco'] }}</p> 
+                </div>
+                
+                <div class="item-actions">
+                    <a href="" class="btn-remover" title="Remover item">
+                        🗑️
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
             <form action="/enviar_pedido_definitivo" method="POST">
                 
-                <div class="item-row">
-                    <div class="item-info">
-                        <h4>2x X-Bacon Duplo</h4>
-                        <p>R$ 32,90 cada</p>
-                    </div>
-                    <div class="item-total">R$ 65,80</div>
-                </div>
-
-                <div class="item-row">
-                    <div class="item-info">
-                        <h4>1x Coca-Cola Lata</h4>
-                        <p>R$ 6,50 cada</p>
-                    </div>
-                    <div class="item-total">R$ 6,50</div>
-                </div>
-
                 <textarea name="observacoes" class="observacao-box" rows="2" placeholder="Alguma observação? Ex: Tirar a cebola, maionese à parte..."></textarea>
 
                 <div class="total-row">
                     <span>Total do Pedido:</span>
-                    <span>R$ 72,30</span>
+                    <span>R$ 00,00</span>
                 </div>
 
                 <button type="submit" class="btn-enviar-cozinha">Confirmar e Enviar para Cozinha 👩‍🍳</button>
             </form>
+            
         </div>
     </main>
 

@@ -7,6 +7,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* =========================================
+   ESTILOS DA FLASH MESSAGE 
+   ========================================= */
+.flash-container {
+    max-width: 800px;
+    margin: 1.5rem auto 0; /* Espaçamento no topo e centralizado */
+    padding: 0 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.flash-message {
+    background-color: var(--success-color); /* Usa o verde de sucesso que você já criou */
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+    animation: fadeInDown 0.4s ease-out;
+}
+
+.flash-message p {
+    margin: 0;
+}
+
+/* Animação suave para a mensagem aparecer descendo */
+@keyframes fadeInDown {
+    from { 
+        opacity: 0; 
+        transform: translateY(-15px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
         /* ... (Mesmas variáveis e estilos base anteriores) ... */
         :root {
             --primary-color: #D35400; 
@@ -69,7 +111,7 @@
             border-color: var(--success-color);
         }
 
-        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); box-shadow: 0 -4px 15px rgba(0,0,0,0.08); padding: 1rem 5%; display: none; z-index: 200; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); box-shadow: 0 -4px 15px rgba(0,0,0,0.08); padding: 1rem 5%; display: block; z-index: 200; }
         .cart-content { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .cart-info { display: flex; flex-direction: column; }
         .cart-total-price { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
@@ -84,7 +126,7 @@
         <div class="header-content">
             <div class="user-info">
                 <h2>Olá, Cliente</h2>
-                <p>Mesa #01 | DonaAna</p>
+                <p>Mesa {{ session['idcomanda'] }} - {{ session['comanda']  }} | DonaAna</p>
             </div>
         </div>
         <div class="category-nav">
@@ -93,103 +135,80 @@
         </div>
     </header>
 
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for message in messages %}
+                        <div class="flash-message">
+                            <span>✅</span> 
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    
     <main>
         <section id="lanches" class="category-section">
             <h3>Lanches</h3>
-            
+            {% for d in dados %}
+            {% if d['categoria'] == "lanches" %}
             <div class="product-card">
                 <img src="https://placehold.co/200x200/EAECEE/7F8C8D?text=X-Bacon" alt="X-Bacon" class="product-img">
                 <div class="product-info">
-                    <h4>X-Bacon Duplo</h4>
-                    <p>Pão brioche, 2 blends de 150g, muito queijo e bacon artesanal.</p>
+                    <h4>{{ d['produto'] }}</h4>
+                    <p>{{ d['descricao'] }}</p>
                     <div class="price-row">
-                        <span class="price">R$ 32,90</span>
-                        <button class="btn-adicionar" data-id="1" data-preco="32.90">Adicionar</button>
+                        <span class="price">R$: {{ d['preco'] }}</span>
+                       <a href=" {{ url_for('adicionarpedido',idproduto=d['id']) }} ">  <button class="btn-adicionar" >Adicionar</button></a> 
                     </div>
                 </div>
             </div>
+            {% endif %}
         </section>
+        {% endfor %}
 
             <section id="Bebidas" class="category-section">
             <h3>Bebidas</h3>
-            
-            <div class="product-card">
-                <img src="https://placehold.co/200x200/EAECEE/7F8C8D?text=Bebida" alt="X-Bacon" class="product-img">
-                <div class="product-info">
-                    <h4>Coca Cola</h4>
-                    <div class="price-row">
-                        <span class="price">R$ 3,90</span>
-                        <button class="btn-adicionar" data-id="1" data-preco="32.90">Adicionar</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+            {% for d in dados %}
 
-    <form id="form-pedido" action="/revisar_pedido" method="POST">
+            {% if  d['categoria']  == "bebidas" %}
+                       
+                            <div class="product-card">
+                                <img src="https://placehold.co/200x200/EAECEE/7F8C8D?text=Bebida" alt="X-Bacon" class="product-img">
+                            <div class="product-info">
+                                <h4>{{ d['produto'] }}</h4>
+                                <p>{{ d['descricao'] }}</p>
+                                <div class="price-row">
+                                    <span class="price">R$: {{ d['preco'] }}</span>
+                                <a href=" {{ url_for('adicionarpedido',idproduto=d['id']) }}"> <button class="btn-adicionar">Adicionar</button> 
+                                </a>    
+                                </div>
+                            </div>
+                            </div>
+            </section>
+            {% endif %}
+        </section>
+        {% endfor %}
+
+
+    </main>
+    
+
+    <form id="form-pedido" action="/revisarpedido" >
         <div class="cart-bar" id="cart-bar">
             <div class="cart-content">
-                <div class="cart-info">
+                <!-- <div class="cart-info">
                     <span class="cart-total-price" id="cart-total">R$ 0,00</span>
                     <span class="cart-total-items" id="cart-items-count">0 itens</span>
-                </div>
+                </div> -->
                 <button type="submit" class="btn-finalizar">Revisar Pedido 🛒</button>
             </div>
         </div>
     </form>
 
-    <script>
-        const cart = {};
-        const cartBar = document.getElementById('cart-bar');
-        const cartTotalEl = document.getElementById('cart-total');
-        const cartItemsCountEl = document.getElementById('cart-items-count');
-        const formPedido = document.getElementById('form-pedido');
 
-        function updateCart() {
-            let total = 0;
-            let itemCount = 0;
-            
-            document.querySelectorAll('.hidden-cart-input').forEach(el => el.remove());
-
-            for (const id in cart) {
-                if (cart[id].qty > 0) {
-                    total += cart[id].qty * cart[id].preco;
-                    itemCount += cart[id].qty;
-
-                    formPedido.insertAdjacentHTML('beforeend', `
-                        <input type="hidden" name="produto_id" value="${id}" class="hidden-cart-input">
-                        <input type="hidden" name="quantidade" value="${cart[id].qty}" class="hidden-cart-input">
-                    `);
-                }
-            }
-
-            if (itemCount > 0) {
-                cartBar.style.display = 'block';
-                cartTotalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-                cartItemsCountEl.innerText = `${itemCount} item(ns)`;
-            } else {
-                cartBar.style.display = 'none';
-            }
-        }
-
-        // Lógica do botão "Adicionar"
-        document.querySelectorAll('.btn-adicionar').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.getAttribute('data-id');
-                const preco = parseFloat(btn.getAttribute('data-preco'));
-
-                if (!cart[id]) cart[id] = { preco: preco, qty: 0 };
-                
-                // Adiciona +1 a cada clique
-                cart[id].qty++;
-                
-                // Feedback visual rápido
-                btn.innerText = `Adicionado (${cart[id].qty})`;
-                btn.classList.add('btn-adicionado');
-                
-                updateCart();
-            });
-        });
-    </script>
 </body>
 </html>
